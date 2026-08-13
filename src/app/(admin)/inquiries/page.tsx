@@ -217,7 +217,7 @@ export default function InquiriesPage() {
           });
           setDraftStatus(response.data.status);
           setDraftMemo(response.data.memo ?? "");
-          setSaveSuccess("문의 상태와 메모를 저장했습니다.");
+          setSaveSuccess("문의 상태와 사용자 공개 답변을 저장했습니다.");
         } catch (caughtError) {
           if (caughtError instanceof ApiError) {
             setSaveError(caughtError.message);
@@ -486,16 +486,16 @@ export default function InquiriesPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="inquiry-memo">운영 메모</Label>
+                  <Label htmlFor="inquiry-memo">사용자 공개 답변</Label>
                   <Textarea
                     id="inquiry-memo"
                     className="min-h-40"
                     value={draftMemo}
                     onChange={(event) => setDraftMemo(event.target.value)}
-                    placeholder="처리 내용이나 후속 조치를 남겨주세요."
+                    placeholder="사용자에게 안내할 처리 내용이나 후속 조치를 작성해주세요."
                   />
                   <p className="text-xs text-muted-foreground">
-                    {draftMemo.length} / 500
+                    내 문의 내역 화면에 공개됩니다. {draftMemo.length} / 500
                   </p>
                 </div>
 
@@ -521,7 +521,7 @@ export default function InquiriesPage() {
                       memo
                     </code>
                     는 백엔드에서 <code>trimToNull</code> 처리되므로 공백만 입력하면
-                    null로 저장됩니다.
+                    null로 저장되고, 입력한 내용은 문의 사용자에게 공개됩니다.
                   </p>
                   <Button
                     onClick={handleUpdateInquiry}
