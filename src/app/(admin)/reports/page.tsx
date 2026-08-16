@@ -41,6 +41,7 @@ import { cn } from "@/lib/utils";
 import { getAuthorizedJson } from "@/lib/api/authenticated-client";
 import { ApiError } from "@/lib/api/http";
 import { getApiBaseUrl } from "@/lib/env/public-env";
+import { formatNullableBoolean } from "@/lib/format/boolean";
 import { formatDateTime } from "@/lib/format/date";
 import type {
   AdminChatMessageReportSnapshot,
@@ -162,7 +163,7 @@ function ChatMessageReportEvidence({
           <DetailField label="예금주" value={snapshot.accountData.accountHolder} />
           <DetailField
             label="이름 숨김"
-            value={snapshot.accountData.hideName ? "ON" : "OFF"}
+            value={formatNullableBoolean(snapshot.accountData.hideName)}
           />
         </div>
       ) : null}

@@ -633,9 +633,7 @@ export function MemberDetailDialog({
                       />
                       <DetailField
                         label="이름 숨김"
-                        value={booleanBadge(
-                          Boolean(selectedMemberDetail.bankAccount.hideName),
-                        )}
+                        value={booleanBadge(selectedMemberDetail.bankAccount.hideName)}
                       />
                     </div>
                   ) : (
