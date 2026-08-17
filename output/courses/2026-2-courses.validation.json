@@ -1,0 +1,177 @@
+{
+  "status": "PASS",
+  "generatedAt": "2026-08-10T08:41:05+09:00",
+  "source": {
+    "path": "/Users/jisung/Downloads/2026-2%ED%95%99%EA%B8%B0%20%EC%8B%9C%EA%B0%84%ED%91%9C%2808071718%29.pdf",
+    "sha256": "d2c47791543070fb4d9f453433ab5c174bb5b5105ef2e4e59e9604f5c0e729d5",
+    "pages": 61,
+    "rows": 1080
+  },
+  "output": {
+    "path": "/Users/jisung/skuri-admin/output/courses/2026-2-courses.bulk.json",
+    "sha256": "848345a9cb89c0cfdc088c028163eecf98932939777cd96e0d378066e9ac468e",
+    "semester": "2026-2",
+    "courses": 1080,
+    "uniqueCourseKeys": 1080,
+    "onlineCourses": 6,
+    "offlineCourses": 1074,
+    "scheduleSlots": 1074,
+    "nullNotes": 1080,
+    "nullProfessors": 46,
+    "nullLocations": 11,
+    "departments": 44
+  },
+  "counts": {
+    "categories": {
+      "교선": 176,
+      "교직": 32,
+      "교필": 180,
+      "전선": 647,
+      "전필": 45
+    },
+    "weekdays": {
+      "1": 225,
+      "2": 275,
+      "3": 249,
+      "4": 235,
+      "5": 83,
+      "6": 7
+    },
+    "pages": {
+      "1": 18,
+      "2": 17,
+      "3": 7,
+      "4": 24,
+      "5": 1,
+      "6": 13,
+      "7": 15,
+      "8": 37,
+      "9": 13,
+      "10": 10,
+      "11": 14,
+      "12": 5,
+      "13": 3,
+      "14": 6,
+      "15": 8,
+      "16": 8,
+      "17": 17,
+      "18": 29,
+      "19": 16,
+      "20": 12,
+      "21": 19,
+      "22": 3,
+      "23": 7,
+      "24": 5,
+      "25": 22,
+      "26": 28,
+      "27": 31,
+      "28": 15,
+      "29": 32,
+      "30": 37,
+      "31": 1,
+      "32": 37,
+      "33": 34,
+      "34": 14,
+      "35": 12,
+      "36": 11,
+      "37": 10,
+      "38": 8,
+      "39": 17,
+      "40": 26,
+      "41": 25,
+      "42": 21,
+      "43": 1,
+      "44": 9,
+      "45": 11,
+      "46": 8,
+      "47": 7,
+      "48": 33,
+      "49": 21,
+      "50": 21,
+      "51": 24,
+      "52": 20,
+      "53": 27,
+      "54": 30,
+      "55": 29,
+      "56": 24,
+      "57": 32,
+      "58": 31,
+      "59": 29,
+      "60": 34,
+      "61": 1
+    },
+    "remoteKeywordCoursesKeptAsScheduledOffline": 25
+  },
+  "onlineCourseKeys": [
+    "20571/009",
+    "20572/009",
+    "00078/001",
+    "19506/001",
+    "21797/001",
+    "22065/001"
+  ],
+  "overrides": [
+    {
+      "type": "sunday_to_online",
+      "source": {
+        "page": 32,
+        "row": 35,
+        "department": "정보통신공학과",
+        "code": "20571",
+        "division": "009",
+        "name": "직무실무(2)",
+        "time": "일1-6",
+        "location": "성205(정통)"
+      },
+      "result": {
+        "code": "20571",
+        "division": "009",
+        "isOnline": true,
+        "location": null,
+        "schedule": []
+      },
+      "reason": "사용자 승인: 일요일 직무실무를 임시 온라인 강의로 처리"
+    },
+    {
+      "type": "sunday_to_online",
+      "source": {
+        "page": 32,
+        "row": 36,
+        "department": "정보통신공학과",
+        "code": "20572",
+        "division": "009",
+        "name": "직무실무(1)",
+        "time": "일7-9",
+        "location": "성205(정통)"
+      },
+      "result": {
+        "code": "20572",
+        "division": "009",
+        "isOnline": true,
+        "location": null,
+        "schedule": []
+      },
+      "reason": "사용자 승인: 일요일 직무실무를 임시 온라인 강의로 처리"
+    },
+    {
+      "type": "division_override",
+      "source": {
+        "page": 61,
+        "row": 1,
+        "department": "파이데이아학부(2부)",
+        "code": "00046",
+        "division": "001",
+        "name": "채플(일반대학2-4학년)",
+        "time": "수13-13",
+        "location": "기405(대회의실)"
+      },
+      "result": {
+        "code": "00046",
+        "division": "005"
+      },
+      "reason": "사용자 승인: 파이데이아학부(2부) 채플 중복 분반을 005로 처리"
+    }
+  ],
+  "duplicateKeys": {},
+  "errors": []
+}
