@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { formatNullableBoolean } from "@/lib/format/boolean";
 import { cn } from "@/lib/utils";
 import type {
   AdminMemberStatus,
@@ -67,18 +68,20 @@ export function partyRoleClasses(role: AdminMemberRecentParty["role"]) {
     : "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/50 dark:text-amber-300";
 }
 
-export function booleanBadge(value: boolean) {
+export function booleanBadge(value: boolean | null | undefined) {
   return (
     <Badge
       variant="outline"
       className={cn(
         "rounded-full",
-        value
+        value == null
+          ? "border-zinc-200 bg-zinc-50 text-zinc-700 dark:border-zinc-800 dark:bg-zinc-950/50 dark:text-zinc-300"
+          : value
           ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-300"
           : "border-zinc-200 bg-zinc-50 text-zinc-700 dark:border-zinc-800 dark:bg-zinc-950/50 dark:text-zinc-300",
       )}
     >
-      {value ? "ON" : "OFF"}
+      {formatNullableBoolean(value)}
     </Badge>
   );
 }

@@ -39,6 +39,7 @@ import type {
   AdminPartySummary,
   ChatMessage,
 } from "@/features/admin/types";
+import { formatNullableBoolean } from "@/lib/format/boolean";
 import { formatDateTime } from "@/lib/format/date";
 
 interface PartyDetailDialogProps {
@@ -408,9 +409,9 @@ export function PartyDetailDialog({
                             </p>
                             <p>
                               이름 숨김:{" "}
-                              {selectedPartyDetail.settlement.account.hideName
-                                ? "true"
-                                : "false"}
+                              {formatNullableBoolean(
+                                selectedPartyDetail.settlement.account.hideName,
+                              )}
                             </p>
                           </div>
                         ) : (

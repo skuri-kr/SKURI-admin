@@ -1,6 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { AlertCircle, ShieldAlert } from "lucide-react";
+import { messageTypeBadgeClass } from "@/components/admin/chat/helpers";
 import { DetailField } from "@/components/admin/detail-field";
 import { MetricCard } from "@/components/admin/metric-card";
 import { useAuth } from "@/features/auth/auth-context";
@@ -39,8 +41,10 @@ import { cn } from "@/lib/utils";
 import { getAuthorizedJson } from "@/lib/api/authenticated-client";
 import { ApiError } from "@/lib/api/http";
 import { getApiBaseUrl } from "@/lib/env/public-env";
+import { formatNullableBoolean } from "@/lib/format/boolean";
 import { formatDateTime } from "@/lib/format/date";
 import type {
+  AdminChatMessageReportSnapshot,
   AdminReport,
   AdminReportStatus,
   ApiResponse,
@@ -86,6 +90,85 @@ function statusClasses(status: AdminReportStatus) {
     case "REJECTED":
       return "border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/50 dark:text-red-300";
   }
+}
+
+function ChatMessageReportEvidence({
+  snapshot,
+}: {
+  snapshot: AdminChatMessageReportSnapshot;
+}) {
+  return (
+    <section
+      aria-label="채팅 메시지 신고 증거"
+      className="space-y-4 rounded-xl border border-amber-300/70 bg-amber-50/40 p-4 dark:border-amber-900 dark:bg-amber-950/20"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="space-y-1">
+          <h3 className="font-semibold">신고 접수 시점 메시지 증거</h3>
+          <p className="text-xs text-muted-foreground">
+            현재 메시지가 수정·삭제되어도 아래 내용은 신고 접수 시점 기준으로 보존됩니다.
+          </p>
+        </div>
+        <Badge variant="outline" className={messageTypeBadgeClass(snapshot.originalType)}>
+          {snapshot.originalType}
+        </Badge>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <DetailField label="채팅방 ID" value={snapshot.chatRoomId} />
+        <DetailField label="메시지 ID" value={snapshot.messageId} />
+        <DetailField label="발신자" value={snapshot.senderName ?? "-"} />
+        <DetailField label="발신자 ID" value={snapshot.senderId} />
+        <DetailField label="작성 시각" value={formatDateTime(snapshot.createdAt)} />
+        <DetailField label="마지막 수정 시각" value={formatDateTime(snapshot.editedAt)} />
+      </div>
+
+      {snapshot.text ? (
+        <DetailField
+          label="메시지 본문"
+          value={<p className="whitespace-pre-wrap break-words">{snapshot.text}</p>}
+        />
+      ) : null}
+
+      {snapshot.imageUrl ? (
+        <div className="space-y-2">
+          <Label className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+            신고 당시 이미지
+          </Label>
+          <div className="overflow-hidden rounded-lg border bg-muted/30">
+            <Image
+              src={snapshot.imageUrl}
+              alt="신고 당시 채팅 이미지"
+              width={1120}
+              height={720}
+              className="max-h-[280px] w-full object-contain"
+              unoptimized
+            />
+          </div>
+          <a
+            href={snapshot.imageUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="break-all text-xs text-primary underline-offset-4 hover:underline"
+          >
+            원본 이미지 열기
+          </a>
+        </div>
+      ) : null}
+
+      {snapshot.accountData ? (
+        <div className="grid gap-4 md:grid-cols-2">
+          <DetailField label="은행명" value={snapshot.accountData.bankName} />
+          <DetailField label="계좌번호" value={snapshot.accountData.accountNumber} />
+          <DetailField label="예금주" value={snapshot.accountData.accountHolder} />
+          <DetailField
+            label="이름 숨김"
+            value={formatNullableBoolean(snapshot.accountData.hideName)}
+          />
+        </div>
+      ) : null}
+    </section>
+  );
 }
 
 export default function ReportsPage() {
@@ -543,6 +626,16 @@ export default function ReportsPage() {
                     value={selectedReport.targetAuthorId ?? "-"}
                   />
                 </div>
+
+                {selectedReport.targetSnapshot ? (
+                  <ChatMessageReportEvidence
+                    snapshot={selectedReport.targetSnapshot}
+                  />
+                ) : selectedReport.targetType === "CHAT_MESSAGE" ? (
+                  <p className="text-sm text-muted-foreground">
+                    이 신고는 증거 snapshot 도입 전 접수되어 보존된 메시지 내용이 없습니다.
+                  </p>
+                ) : null}
 
                 <div className="space-y-2">
                   <Label>상태</Label>

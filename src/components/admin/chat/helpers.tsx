@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import type { ChatMessage, ChatMessageType, ChatRoomLastMessage, ChatRoomType } from "@/features/admin/types";
+import { formatNullableBoolean } from "@/lib/format/boolean";
 
 export function formatChatText(value: string | null | undefined) {
   return value && value.trim().length ? value : "-";
@@ -100,12 +101,14 @@ export function renderChatMessageContent(message: ChatMessage) {
             <Badge
               variant="outline"
               className={
-                message.accountData.hideName
+                message.accountData.hideName == null
+                  ? "border-zinc-200 bg-zinc-50 text-zinc-700 dark:border-zinc-800 dark:bg-zinc-950/50 dark:text-zinc-300"
+                  : message.accountData.hideName
                   ? "border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-900 dark:bg-orange-950/50 dark:text-orange-300"
                   : "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-300"
               }
             >
-              {message.accountData.hideName ? "ON" : "OFF"}
+              {formatNullableBoolean(message.accountData.hideName)}
             </Badge>
           </div>
         </div>

@@ -643,6 +643,7 @@ export interface AdminReport {
   targetType: AdminReportTargetType;
   targetId: string;
   targetAuthorId: string | null;
+  targetSnapshot: AdminChatMessageReportSnapshot | null;
   category: string;
   reason: string;
   status: AdminReportStatus;
@@ -650,4 +651,19 @@ export interface AdminReport {
   memo: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface AdminChatMessageReportSnapshot {
+  messageId: string;
+  chatRoomId: string;
+  senderId: string;
+  senderName: string | null;
+  originalType: ChatMessageType;
+  text: string | null;
+  imageUrl: string | null;
+  accountData: ChatAccountData | null;
+  direction: string | null;
+  source: string | null;
+  createdAt: string | null;
+  editedAt: string | null;
 }
