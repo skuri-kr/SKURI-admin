@@ -632,6 +632,7 @@ export type AdminReportStatus =
 export type AdminReportTargetType =
   | "POST"
   | "COMMENT"
+  | "NOTICE_COMMENT"
   | "MEMBER"
   | "CHAT_MESSAGE"
   | "CHAT_ROOM"
