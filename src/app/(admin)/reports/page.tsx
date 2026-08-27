@@ -63,6 +63,7 @@ const targetTypeOptions = [
   "ALL",
   "POST",
   "COMMENT",
+  "NOTICE_COMMENT",
   "MEMBER",
   "CHAT_MESSAGE",
   "CHAT_ROOM",
