@@ -353,6 +353,11 @@ export interface AppNotice {
   priority: "HIGH" | "NORMAL" | "LOW";
   imageUrls: string[];
   actionUrl: string | null;
+  actionLabel: string | null;
+  viewCount: number;
+  likeCount: number;
+  commentCount: number;
+  isLiked: boolean;
   publishedAt: string;
   createdAt: string;
   updatedAt: string;
