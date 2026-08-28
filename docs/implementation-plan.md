@@ -21,7 +21,7 @@
 
 - `/login`: Firebase Web SDK 기반 관리자 로그인 UI 구현
 - 공통 Admin Shell: 사이드바, 상단 헤더, 권한 가드 구현
-- `/app-notices`: 공지 목록 + unread count 조회 + 생성/수정/삭제 구현
+- `/app-notices`: 공지 목록 + unread count/조회·좋아요·댓글 통계 + 생성/수정/삭제 구현. HTTPS 액션 URL, 선택 버튼 문구, URL 제거를 지원
 - `/campus-banners`: 관리자 배너 목록 + 생성/수정/삭제/정렬 구현
 - `/app-versions`: 플랫폼별 live 설정 조회 + 관리자 저장 구현
 - `/legal-documents`: 문서 키별 목록/상세 조회 + 생성/수정/삭제 구현
@@ -104,7 +104,7 @@
 | `/chat-rooms` | 공개 채팅방 목록/상세/메시지 운영 + 관리자 생성/삭제 | 부분 구현 |
 | `/boards` | 게시글/댓글 운영 | 부분 구현 |
 | `/notices` | 학교 공지 목록/상세 + sync 진입 | 부분 구현 |
-| `/app-notices` | 앱 공지 관리 | 부분 구현 |
+| `/app-notices` | 앱 공지 관리 | 액션 URL/문구 및 반응 통계 포함 구현 |
 | `/campus-banners` | 캠퍼스 홈 배너 관리 | 부분 구현 |
 | `/app-versions` | 앱 버전 관리 | 부분 구현 |
 | `/legal-documents` | 약관/개인정보 처리방침 관리 | 부분 구현 |
