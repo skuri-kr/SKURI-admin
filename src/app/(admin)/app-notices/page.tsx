@@ -422,9 +422,7 @@ export default function AppNoticesPage() {
                 ? "액션 URL은 유효한 HTTPS 주소여야 합니다."
                 : editForm.actionLabel.trim().length > 30
                   ? "버튼 문구는 30자 이하여야 합니다."
-                  : editForm.actionLabel.trim() && !editForm.actionUrl.trim()
-                    ? "버튼 문구를 사용하려면 액션 URL을 입력해주세요."
-                    : null;
+                  : null;
 
   const isEditDirty = Boolean(
     selectedNotice &&
@@ -510,8 +508,11 @@ export default function AppNoticesPage() {
             publishedAt: fromDateTimeLocalInputValue(editForm.publishedAt),
           };
 
-          body.actionUrl = editForm.actionUrl.trim();
-          body.actionLabel = editForm.actionLabel.trim();
+          const normalizedActionUrl = editForm.actionUrl.trim();
+          body.actionUrl = normalizedActionUrl;
+          body.actionLabel = normalizedActionUrl
+            ? editForm.actionLabel.trim()
+            : "";
 
           const response = await getAuthorizedJson<ApiResponse<AppNotice>>(
             user,
