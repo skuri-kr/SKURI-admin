@@ -311,8 +311,8 @@ export default function AppNoticesPage() {
     }));
   };
 
-  const handleCreateImageUpload = async (files: FileList | null) => {
-    if (!user || !files?.length) {
+  const handleCreateImageUpload = async (files: File[]) => {
+    if (!user || !files.length) {
       return;
     }
 
@@ -321,7 +321,7 @@ export default function AppNoticesPage() {
 
     try {
       const uploads = await Promise.all(
-        Array.from(files).map((file) =>
+        files.map((file) =>
           uploadAuthorizedImage(user, "APP_NOTICE_IMAGE", file),
         ),
       );
@@ -343,8 +343,8 @@ export default function AppNoticesPage() {
     }
   };
 
-  const handleEditImageUpload = async (files: FileList | null) => {
-    if (!user || !files?.length) {
+  const handleEditImageUpload = async (files: File[]) => {
+    if (!user || !files.length) {
       return;
     }
 
@@ -353,7 +353,7 @@ export default function AppNoticesPage() {
 
     try {
       const uploads = await Promise.all(
-        Array.from(files).map((file) =>
+        files.map((file) =>
           uploadAuthorizedImage(user, "APP_NOTICE_IMAGE", file),
         ),
       );
@@ -664,8 +664,8 @@ export default function AppNoticesPage() {
                 accept="image/jpeg,image/png,image/webp"
                 multiple
                 onChange={(event) => {
-                  const files = event.target.files;
-                  event.target.value = "";
+                  const files = Array.from(event.currentTarget.files ?? []);
+                  event.currentTarget.value = "";
                   void handleCreateImageUpload(files);
                 }}
               />
@@ -840,8 +840,8 @@ export default function AppNoticesPage() {
                     accept="image/jpeg,image/png,image/webp"
                     multiple
                     onChange={(event) => {
-                      const files = event.target.files;
-                      event.target.value = "";
+                      const files = Array.from(event.currentTarget.files ?? []);
+                      event.currentTarget.value = "";
                       void handleEditImageUpload(files);
                     }}
                   />
