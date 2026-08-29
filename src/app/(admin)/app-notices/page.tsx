@@ -78,6 +78,7 @@ interface AppNoticeFormState {
   priority: AppNotice["priority"];
   imageUrlsText: string;
   actionUrl: string;
+  actionLabel: string;
   publishedAt: string;
 }
 
@@ -100,6 +101,7 @@ function createDefaultFormState(): AppNoticeFormState {
     priority: "NORMAL",
     imageUrlsText: "",
     actionUrl: "",
+    actionLabel: "",
     publishedAt: "",
   };
 }
@@ -126,6 +128,19 @@ function serializeImageUrls(urls: string[]) {
   return urls.join("\n");
 }
 
+function isValidHttpsUrl(value: string) {
+  if (!value.trim()) {
+    return true;
+  }
+
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "https:" && Boolean(url.hostname);
+  } catch {
+    return false;
+  }
+}
+
 function toFormState(item: AppNotice): AppNoticeFormState {
   return {
     title: item.title,
@@ -134,6 +149,7 @@ function toFormState(item: AppNotice): AppNoticeFormState {
     priority: item.priority,
     imageUrlsText: item.imageUrls.join("\n"),
     actionUrl: item.actionUrl ?? "",
+    actionLabel: item.actionLabel ?? "",
     publishedAt: toDateTimeLocalInputValue(item.publishedAt),
   };
 }
@@ -384,11 +400,13 @@ export default function AppNoticesPage() {
           ? "본문은 비어 있을 수 없습니다."
           : !createForm.publishedAt
             ? "게시 시각을 입력해주세요."
-            : null;
-
-  const isEditActionUrlClearUnsupported = Boolean(
-    selectedNotice?.actionUrl && !editForm.actionUrl.trim(),
-  );
+            : !isValidHttpsUrl(createForm.actionUrl)
+              ? "액션 URL은 유효한 HTTPS 주소여야 합니다."
+              : createForm.actionLabel.trim().length > 30
+                ? "버튼 문구는 30자 이하여야 합니다."
+                : createForm.actionLabel.trim() && !createForm.actionUrl.trim()
+                  ? "버튼 문구를 사용하려면 액션 URL을 입력해주세요."
+                  : null;
   const editValidationError =
     !selectedNotice
       ? "수정할 공지를 선택해주세요."
@@ -400,9 +418,11 @@ export default function AppNoticesPage() {
             ? "본문은 비어 있을 수 없습니다."
             : !editForm.publishedAt
               ? "게시 시각을 입력해주세요."
-              : isEditActionUrlClearUnsupported
-                ? "현재 백엔드 PATCH 계약으로는 actionUrl 비우기가 지원되지 않습니다."
-                : null;
+              : !isValidHttpsUrl(editForm.actionUrl)
+                ? "액션 URL은 유효한 HTTPS 주소여야 합니다."
+                : editForm.actionLabel.trim().length > 30
+                  ? "버튼 문구는 30자 이하여야 합니다."
+                  : null;
 
   const isEditDirty = Boolean(
     selectedNotice &&
@@ -412,6 +432,7 @@ export default function AppNoticesPage() {
         editForm.priority !== selectedNotice.priority ||
         editForm.imageUrlsText !== selectedNotice.imageUrls.join("\n") ||
         editForm.actionUrl !== (selectedNotice.actionUrl ?? "") ||
+        editForm.actionLabel !== (selectedNotice.actionLabel ?? "") ||
         editForm.publishedAt !== toDateTimeLocalInputValue(selectedNotice.publishedAt)),
   );
 
@@ -443,6 +464,7 @@ export default function AppNoticesPage() {
               priority: createForm.priority,
               imageUrls: createImageUrls,
               actionUrl: createForm.actionUrl.trim() || null,
+              actionLabel: createForm.actionLabel.trim() || null,
               publishedAt: fromDateTimeLocalInputValue(createForm.publishedAt),
             }),
           });
@@ -486,9 +508,11 @@ export default function AppNoticesPage() {
             publishedAt: fromDateTimeLocalInputValue(editForm.publishedAt),
           };
 
-          if (editForm.actionUrl.trim()) {
-            body.actionUrl = editForm.actionUrl.trim();
-          }
+          const normalizedActionUrl = editForm.actionUrl.trim();
+          body.actionUrl = normalizedActionUrl;
+          body.actionLabel = normalizedActionUrl
+            ? editForm.actionLabel.trim()
+            : "";
 
           const response = await getAuthorizedJson<ApiResponse<AppNotice>>(
             user,
@@ -576,16 +600,26 @@ export default function AppNoticesPage() {
         </Card>
         <Card>
           <CardContent className="space-y-1 pt-6">
-            <p className="text-sm text-muted-foreground">읽지 않은 공지</p>
-            <p className="text-3xl font-semibold">{unreadCount ?? "-"}</p>
+            <p className="text-sm text-muted-foreground">누적 조회</p>
+            <p className="text-3xl font-semibold">
+              {items.reduce((sum, item) => sum + item.viewCount, 0).toLocaleString()}
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="space-y-1 pt-6">
-            <p className="text-sm text-muted-foreground">최고 우선순위 공지</p>
+            <p className="text-sm text-muted-foreground">좋아요 / 댓글</p>
             <p className="text-3xl font-semibold">
-              {items.filter((item) => item.priority === "HIGH").length}
+              {items.reduce((sum, item) => sum + item.likeCount, 0).toLocaleString()}
+              <span className="px-2 text-muted-foreground">/</span>
+              {items.reduce((sum, item) => sum + item.commentCount, 0).toLocaleString()}
             </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="space-y-1 pt-6">
+            <p className="text-sm text-muted-foreground">내 계정의 읽지 않은 공지</p>
+            <p className="text-3xl font-semibold">{unreadCount ?? "-"}</p>
           </CardContent>
         </Card>
       </ResponsiveGrid>
@@ -719,14 +753,26 @@ export default function AppNoticesPage() {
                 />
               </FormField>
 
-              <FormField label="게시 시각">
+              <FormField
+                label="버튼 문구"
+                hint="비워두면 앱에서 ‘관련 페이지 보기’로 표시합니다."
+              >
                 <Input
-                  type="datetime-local"
-                  value={createForm.publishedAt}
-                  onChange={(event) => updateCreateForm("publishedAt", event.target.value)}
+                  maxLength={30}
+                  value={createForm.actionLabel}
+                  onChange={(event) => updateCreateForm("actionLabel", event.target.value)}
+                  placeholder="점검 현황 보기"
                 />
               </FormField>
             </TwoColumnGrid>
+
+            <FormField label="게시 시각">
+              <Input
+                type="datetime-local"
+                value={createForm.publishedAt}
+                onChange={(event) => updateCreateForm("publishedAt", event.target.value)}
+              />
+            </FormField>
 
             {createSuccess ? (
               <Alert>
@@ -895,7 +941,7 @@ export default function AppNoticesPage() {
                 <TwoColumnGrid>
                   <FormField
                     label="액션 URL"
-                    hint="PATCH 계약상 비우기는 미지원입니다. 제거가 필요하면 백엔드 확장이 필요합니다."
+                    hint="HTTPS 주소만 허용하며, 비우고 저장하면 기존 버튼을 제거합니다."
                   >
                     <Input
                       value={editForm.actionUrl}
@@ -903,14 +949,25 @@ export default function AppNoticesPage() {
                     />
                   </FormField>
 
-                  <FormField label="게시 시각">
+                  <FormField
+                    label="버튼 문구"
+                    hint="비워두면 앱에서 기본 문구를 사용합니다."
+                  >
                     <Input
-                      type="datetime-local"
-                      value={editForm.publishedAt}
-                      onChange={(event) => updateEditForm("publishedAt", event.target.value)}
+                      maxLength={30}
+                      value={editForm.actionLabel}
+                      onChange={(event) => updateEditForm("actionLabel", event.target.value)}
                     />
                   </FormField>
                 </TwoColumnGrid>
+
+                <FormField label="게시 시각">
+                  <Input
+                    type="datetime-local"
+                    value={editForm.publishedAt}
+                    onChange={(event) => updateEditForm("publishedAt", event.target.value)}
+                  />
+                </FormField>
 
                 {selectedNotice.actionUrl ? (
                   <div className="rounded-xl bg-muted/40 p-3">
@@ -999,6 +1056,9 @@ export default function AppNoticesPage() {
                   <TableHead>카테고리</TableHead>
                   <TableHead>우선순위</TableHead>
                   <TableHead>이미지</TableHead>
+                  <TableHead className="text-right">조회</TableHead>
+                  <TableHead className="text-right">좋아요</TableHead>
+                  <TableHead className="text-right">댓글</TableHead>
                   <TableHead className="text-right">게시일</TableHead>
                 </TableRow>
               </TableHeader>
@@ -1042,6 +1102,15 @@ export default function AppNoticesPage() {
                         ) : (
                           <p className="text-sm text-muted-foreground">없음</p>
                         )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {notice.viewCount.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {notice.likeCount.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {notice.commentCount.toLocaleString()}
                       </TableCell>
                       <TableCell className="text-right">
                         {formatDateTime(notice.publishedAt)}
